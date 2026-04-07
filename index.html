@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>毛主席语录 - Mao Zedong Quotations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --secondary: #818CF8;
+            --cta: #F97316;
+            --bg: #EEF2FF;
+            --text: #1E1B4B;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --shadow: 0 8px 32px rgba(79, 70, 229, 0.1), inset 0 4px 12px rgba(255, 255, 255, 0.5);
+            --shadow-hover: 0 12px 40px rgba(79, 70, 229, 0.15), inset 0 4px 16px rgba(255, 255, 255, 0.6);
+            --border-radius: 16px;
+            --border-width: 3px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        /* Navigation Sidebar */
+        .sidebar {
+            width: 320px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: var(--border-width) solid rgba(255, 255, 255, 0.6);
+            padding: 1.5rem;
+            height: calc(100vh - 3rem);
+            position: sticky;
+            top: 1.5rem;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            text-align: center;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 0.5rem;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: var(--border-width) solid rgba(79, 70, 229, 0.2);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            margin-bottom: 1.5rem;
+            background: rgba(255, 255, 255, 0.7);
+            transition: all 0.2s ease-out;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .classify-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .classify-title {
+            font-family: 'Libre Baskerville', serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--cta);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-left: 0.5rem;
+            border-left: 3px solid var(--cta);
+        }
+
+        .chapter-list {
+            list-style: none;
+        }
+
+        .chapter-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .chapter-btn {
+            width: 100%;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border: none;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease-out;
+            border: var(--border-width) solid rgba(255, 255, 255, 0.4);
+        }
+
+        .chapter-btn:hover {
+            background: rgba(255, 255, 255, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+        }
+
+        .chapter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            padding: 0;
+            overflow-y: auto;
+        }
+
+        .content-header {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: var(--border-width) solid rgba(255, 255, 255, 0.6);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .content-header h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .content-header .classify-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--cta);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .quotations-container {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .quotation-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: var(--border-width) solid rgba(255, 255, 255, 0.6);
+            padding: 2rem;
+            transition: all 0.2s ease-out;
+            backdrop-filter: blur(10px);
+        }
+
+        .quotation-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .quotation-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            white-space: pre-line;
+        }
+
+        .quotation-source {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            font-style: italic;
+            border-left: 3px solid var(--secondary);
+            padding-left: 1rem;
+            margin-left: 1rem;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: var(--secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                margin-bottom: 1rem;
+            }
+
+            .content-header h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 0.5rem;
+            }
+
+            .sidebar,
+            .content-header,
+            .quotation-card {
+                padding: 1rem;
+            }
+
+            .quotation-text {
+                font-size: 1rem;
+            }
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--secondary);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary);
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar" role="navigation" aria-label="章节导航">
+            <h1>毛主席语录</h1>
+            <input type="text" class="search-box" id="searchInput" placeholder="搜索语录内容..." aria-label="搜索语录">
+            <nav id="chapterNav"></nav>
+        </aside>
+
+        <main class="main-content" role="main">
+            <div class="content-header">
+                <h2 id="chapterTitle">选择一个章节</h2>
+                <span id="classifyTag" class="classify-tag" style="display: none;"></span>
+            </div>
+            <div id="quotationsContainer" class="quotations-container">
+                <div class="loading">请从左侧选择一个章节</div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Data storage for chapters
+        let allChapters = [];
+        let currentChapter = null;
+        let searchTimeout = null;
+
+        // Initialize the application
+        async function init() {
+            await loadChapters();
+            renderNavigation();
+            setupSearch();
+        }
+
+        // Load all chapters from JSON files
+        async function loadChapters() {
+            try {
+                // Get list of all chapter files
+                const response = await fetch('jsons/');
+                const text = await response.text();
+                
+                // Parse directory listing (this is a simplified approach)
+                // In a real implementation, you might want to have an index file
+                const chapterFiles = [
+                    '01_目录.json',
+                    '02_《毛主席语录》再版前言.json',
+                    '03_一、共产党.json',
+                    '04_二、阶级和阶级斗争.json',
+                    '05_三、社会主义和共产主义.json',
+                    '06_四、正确处理人民内部矛盾.json',
+                    '07_五、战争与和平.json',
+                    '08_六、帝国主义和一切反动派都是纸老虎.json',
+                    '09_七、敢于斗争，敢于胜利.json',
+                    '10_八、人民战争.json',
+                    '11_九、人民军队.json',
+                    '12_十、党委领导.json',
+                    '13_十一、群众路线.json',
+                    '14_十二、政治工作.json',
+                    '15_十三、官兵关系.json',
+                    '16_十四、军民关系.json',
+                    '17_十五、三大民主.json',
+                    '18_十六、教育和训练.json',
+                    '19_十七、为人民服务.json',
+                    '20_十八、爱国主义和国际主义.json',
+                    '21_十九、革命英雄主义.json',
+                    '22_二十、勤俭建国.json',
+                    '23_二十一、自力更生，艰苦奋斗.json',
+                    '24_二十二、思想方法和工作方法.json',
+                    '25_二十三、调查研究.json',
+                    '26_二十四、纠正错误思想.json',
+                    '27_二十五、团结.json',
+                    '28_二十六、纪律.json',
+                    '29_二十七、批评和自我批评.json',
+                    '30_二十八、共产党员.json',
+                    '31_二十九、干部.json',
+                    '32_三十、青年.json',
+                    '33_三十一、妇女.json',
+                    '34_三十二、文化艺术.json',
+                    '35_三十三、学习.json'
+                ];
+
+                const chapters = [];
+                for (const file of chapterFiles) {
+                    try {
+                        const chapterResponse = await fetch(`jsons/${file}`);
+                        if (chapterResponse.ok) {
+                            const chapter = await chapterResponse.json();
+                            chapters.push(chapter);
+                        }
+                    } catch (error) {
+                        console.warn(`Failed to load ${file}:`, error);
+                    }
+                }
+
+                allChapters = chapters;
+            } catch (error) {
+                console.error('Failed to load chapters:', error);
+                document.getElementById('quotationsContainer').innerHTML = 
+                    '<div class="no-results">加载章节数据失败，请检查文件路径。</div>';
+            }
+        }
+
+        // Render navigation sidebar
+        function renderNavigation() {
+            const nav = document.getElementById('chapterNav');
+            nav.innerHTML = '';
+
+            // Group chapters by classification
+            const chaptersByClassify = {};
+            allChapters.forEach(chapter => {
+                if (chapter.classify && chapter.classify !== '其他') {
+                    if (!chaptersByClassify[chapter.classify]) {
+                        chaptersByClassify[chapter.classify] = [];
+                    }
+                    chaptersByClassify[chapter.classify].push(chapter);
+                }
+            });
+
+            // Render each classification section
+            for (const [classify, chapters] of Object.entries(chaptersByClassify)) {
+                const section = document.createElement('div');
+                section.className = 'classify-section';
+                
+                const title = document.createElement('h3');
+                title.className = 'classify-title';
+                title.textContent = classify;
+                section.appendChild(title);
+
+                const list = document.createElement('ul');
+                list.className = 'chapter-list';
+
+                chapters.forEach(chapter => {
+                    const li = document.createElement('li');
+                    li.className = 'chapter-item';
+                    
+                    const btn = document.createElement('button');
+                    btn.className = 'chapter-btn';
+                    btn.textContent = chapter.chapter;
+                    btn.onclick = () => loadChapter(chapter);
+                    
+                    li.appendChild(btn);
+                    list.appendChild(li);
+                });
+
+                section.appendChild(list);
+                nav.appendChild(section);
+            }
+        }
+
+        // Load and display a chapter
+        function loadChapter(chapter) {
+            currentChapter = chapter;
+            
+            // Update active state
+            document.querySelectorAll('.chapter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update header
+            document.getElementById('chapterTitle').textContent = chapter.chapter;
+            document.getElementById('classifyTag').textContent = chapter.classify;
+            document.getElementById('classifyTag').style.display = 'inline-block';
+
+            // Render quotations
+            renderQuotations(chapter.contentList || []);
+        }
+
+        // Render quotations in the main content area
+        function renderQuotations(contentList) {
+            const container = document.getElementById('quotationsContainer');
+            
+            if (!contentList || contentList.length === 0) {
+                container.innerHTML = '<div class="no-results">本章暂无内容</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            
+            contentList.forEach((content, index) => {
+                // Split content into quotation and source
+                const parts = content.split('\n——');
+                const quotation = parts[0];
+                const source = parts.length > 1 ? '——' + parts[1] : '';
+
+                const card = document.createElement('div');
+                card.className = 'quotation-card';
+                
+                const text = document.createElement('div');
+                text.className = 'quotation-text';
+                text.textContent = quotation;
+                
+                if (source) {
+                    const src = document.createElement('div');
+                    src.className = 'quotation-source';
+                    src.textContent = source;
+                    card.appendChild(text);
+                    card.appendChild(src);
+                } else {
+                    card.appendChild(text);
+                }
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Setup search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    performSearch(e.target.value);
+                }, 300);
+            });
+        }
+
+        // Perform search across all chapters
+        function performSearch(query) {
+            if (!query.trim()) {
+                if (currentChapter) {
+                    renderQuotations(currentChapter.contentList || []);
+                } else {
+                    document.getElementById('quotationsContainer').innerHTML = 
+                        '<div class="loading">请从左侧选择一个章节</div>';
+                }
+                return;
+            }
+
+            const results = [];
+            allChapters.forEach(chapter => {
+                if (chapter.contentList) {
+                    chapter.contentList.forEach(content => {
+                        if (content.toLowerCase().includes(query.toLowerCase())) {
+                            results.push({
+                                chapter: chapter.chapter,
+                                classify: chapter.classify,
+                                content: content
+                            });
+                        }
+                    });
+                }
+            });
+
+            // Update header
+            document.getElementById('chapterTitle').textContent = `搜索结果 (${results.length}条)`;
+            document.getElementById('classifyTag').style.display = 'none';
+
+            // Render search results
+            const container = document.getElementById('quotationsContainer');
+            
+            if (results.length === 0) {
+                container.innerHTML = '<div class="no-results">未找到匹配的语录</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            results.forEach(result => {
+                const parts = result.content.split('\n——');
+                const quotation = parts[0];
+                const source = parts.length > 1 ? '——' + parts[1] : '';
+
+                const card = document.createElement('div');
+                card.className = 'quotation-card';
+                
+                const header = document.createElement('div');
+                header.style.marginBottom = '0.75rem';
+                header.innerHTML = `
+                    <strong style="color: var(--primary);">${result.chapter}</strong>
+                    <span style="color: var(--cta); margin-left: 0.5rem;">[${result.classify}]</span>
+                `;
+                
+                const text = document.createElement('div');
+                text.className = 'quotation-text';
+                text.textContent = quotation;
+                
+                card.appendChild(header);
+                card.appendChild(text);
+                
+                if (source) {
+                    const src = document.createElement('div');
+                    src.className = 'quotation-source';
+                    src.textContent = source;
+                    card.appendChild(src);
+                }
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
