@@ -15,7 +15,49 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Validate JSON files
+        run: |
+          python3 -c "
+          import json
+          import sys
+          from pathlib import Path
+          
+          errors = []
+          json_files = list(Path('jsons').glob('*.json'))
+          
+          print(f'Validating {len(json_files)} JSON files...')
+          
+          for file in json_files:
+              try:
+                  with open(file, 'r', encoding='utf-8') as f:
+                      data = json.load(f)
+                  print(f'✓ {file.name}')
+              except Exception as e:
+                  errors.append(f'{file.name}: {str(e)}')
+                  print(f'✗ {file.name} - {str(e)}')
+          
+          if errors:
+              print(f'\n{len(errors)} file(s) failed validation:')
+              for error in errors:
+                  print(f'  - {error}')
+              sys.exit(1)
+          else:
+              print(f'\n✅ All {len(json_files)} JSON files are valid!')
+          "
+
   deploy:
+    needs: validate
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
