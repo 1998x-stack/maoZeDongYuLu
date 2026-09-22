@@ -1,225 +1,59 @@
-# 毛主席语录网页版 | Mao Zedong Quotations Web Reader
+# 《毛主席语录》整理资料 · 网页阅读器
 
-> 基于 JSON 数据生成的交互式《毛主席语录》阅读网页
-> Interactive web reader for Mao Zedong Quotations based on JSON data
+基于本仓库 `jsons/` 中的整理文本构建的静态文献阅读、检索及图片摘录工具。本项目展示历史文本，不对引文内容作价值判断；数据及出处尚未经过独立版本校勘。
 
-[![Deploy to GitHub Pages](https://github.com/1998x-stack/maoZeDongYuLu/actions/workflows/deploy.yml/badge.svg)](https://github.com/1998x-stack/maoZeDongYuLu/actions/workflows/deploy.yml)
-[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-brightgreen)](https://1998x-stack.github.io/maoZeDongYuLu/)
+## 功能
 
-![预览截图](assets/screenshot.png)
+- **完整章节浏览**：目录与再版前言作为附属资料单独展示；正文篇章依照仓库既有顺序浏览。
+- **逐条阅读与检索**：把同一个 `contentList` 字符串中的多组正文与 `——` 出处分为多条记录；支持按章节、正文、章节名称和出处检索。
+- **原文与出处分离**：逐条显示来源文字；缺失来源则明确提示。记录链接使用稳定的章节/片段标识，不人为推断发表日期。
+- **图片卡片工作台**：每条正文可以选择纸本文献、柔和笔记或深色阅读主题，设置 3:4、4:5、1:1 比例与正文字号；Canvas 在本地预览并逐页下载 1080px 宽 PNG。
+- **移动与键盘操作**：响应式目录与编辑器、明确的焦点样式、`/` 聚焦搜索、原生对话框 Escape 关闭、减少动画偏好支持。
 
-*预览图：Claymorphism 设计风格的交互式语录阅读器*
+### 文献与引用边界
 
-## 🌟 功能特性 | Features
+`jsons/` 是整理数据而非经过逐条人工校勘的权威版次。当前程序只以**独立行开头的 `——`** 作为出处分界线；异常断行或标注仍可能需要人工核对。一个原始 JSON 字符串不一定等于一条语录；显示的“记录数”表示依上述规则拆分的文本记录，而不是某一版本的标准篇目数。目录及另有署名的再版前言不计入正文统计，也不会作为毛泽东原文生成图片。
 
-### 📚 章节导航 | Chapter Navigation
-- **分类浏览**：左侧导航栏按分类（如"党的建设"、"军事"等）组织章节
-- **快速跳转**：点击章节按钮立即加载内容
-- **视觉反馈**：当前选中章节高亮显示
+导出图片中保留正文顺序和章节信息；较长的来源文字不会被伪装为完整引文，而是提醒读者到阅读页查看原始记录。请在正式引用或传播前与原始出版物核对文句、年代、署名和上下文。此项目不提供独立核实的原文网址或年代趋势分析。
 
-*Categorized navigation with instant content loading and visual feedback*
+## 开发与运行
 
-### 🔍 智能搜索 | Smart Search
-- **全文搜索**：实时搜索所有章节内容
-- **高亮结果**：匹配关键词橙色高亮显示
-- **搜索统计**：显示搜索结果数量
-- **快捷操作**：支持 Escape 键清除搜索
+无需 npm 安装或第三方图片生成 API。需要现代浏览器和支持 ES Modules 的本地 HTTP 服务：
 
-*Full-text search with keyword highlighting and search statistics*
-
-### ♿ 无障碍访问 | Accessibility
-- **语义化HTML**：正确使用 `<nav>`, `<main>`, `<article>` 标签
-- **ARIA支持**：`aria-live`, `aria-busy`, `aria-current` 等属性
-- **键盘导航**：完整支持 Tab, Enter, Space, Escape 键
-- **屏幕阅读器**：兼容 NVDA, JAWS, VoiceOver
-
-*Semantic HTML with full ARIA support and keyboard navigation*
-
-### 🎨 设计特色 | Design Highlights
-- **Claymorphism 风格**：软萌3D效果，圆润边角
-- **响应式设计**：完美适配桌面、平板、手机
-- **性能优化**：防抖搜索、懒加载、平滑过渡
-- **阅读友好**：优化字体、行距、对比度
-
-*Claymorphism design with responsive layout and performance optimizations*
-
-### 💻 键盘快捷键 | Keyboard Shortcuts
-- `Tab` - 在导航元素间切换
-- `Enter`/`Space` - 激活按钮
-- `Escape` - 清除搜索
-- `↑`/`↓` - 章节列表导航
-
-## 🚀 快速开始 | Quick Start
-
-### 在线访问 | Online Access
-
-🌐 **GitHub Pages**: https://1998x-stack.github.io/maoZeDongYuLu/
-
-无需安装，直接在浏览器中访问即可使用。
-
-### 本地运行 | Local Development
-
-1. **克隆仓库**
-   ```bash
-   git clone https://github.com/1998x-stack/maoZeDongYuLu.git
-   cd maoZeDongYuLu
-   ```
-
-2. **启动HTTP服务器**（必需，因浏览器安全限制）
-   ```bash
-   python3 -m http.server 8000
-   ```
-
-3. **访问网页**
-   打开浏览器访问 `http://localhost:8000`
-
-## 📁 项目结构 | Project Structure
-
-```
-maozedongyulu/
-├── index.html              # 主网页文件 | Main HTML file
-├── jsons/                  # JSON数据目录 | JSON data directory
-│   ├── 01_目录.json        # 目录 | Table of Contents
-│   ├── 02_《毛主席语录》再版前言.json
-│   ├── 03_一、共产党.json
-│   └── ...（共35个章节）
-├── assets/                 # 资源文件 | Assets
-│   └── screenshot.png      # 预览截图 | Screenshot
-├── metadata.json           # 元数据 | Metadata
-├── 毛主席语录.json         # 完整数据 | Complete data
-├── .github/workflows/      # GitHub Actions
-│   └── deploy.yml          # 部署配置 | Deployment config
-└── README.md               # 项目文档 | Documentation
+```bash
+git clone https://github.com/1998x-stack/maoZeDongYuLu.git
+cd maoZeDongYuLu
+python3 -m http.server 8000
 ```
 
-## 🛠️ 技术栈 | Tech Stack
+然后访问 `http://localhost:8000/`。不要直接打开 `file://`，因为浏览器通常禁止以这种方式获取相邻 JSON 文件。
 
-### 设计系统 | Design System
-- **设计模式**：Feature-Rich Showcase
-- **视觉风格**：Claymorphism（软萌3D）
-- **配色方案**：
-  - 主色：`#4F46E5` (靛蓝)
-  - 辅色：`#818CF8` (浅蓝)
-  - 强调色：`#F97316` (橙红)
-  - 背景：`#EEF2FF` (淡紫)
-- **字体**：Noto Serif SC + EB Garamond
+运行回归测试（Node.js 22）：
 
-### 前端技术 | Frontend
-- **纯HTML/CSS/JavaScript**：无依赖，轻量快速
-- **现代CSS**：自定义属性、Flexbox、Grid、Backdrop-filter
-- **渐进增强**：JavaScript失败时仍可显示基本内容
-
-## 📱 浏览器兼容性 | Browser Compatibility
-
-| 浏览器 | 最低版本 | 状态 |
-|--------|---------|------|
-| Chrome | 90+ | ✅ 完全支持 |
-| Firefox | 88+ | ✅ 完全支持 |
-| Safari | 14+ | ✅ 完全支持 |
-| Edge | 90+ | ✅ 完全支持 |
-| 移动端浏览器 | - | ✅ 响应式设计 |
-
-## 📖 数据来源 | Data Source
-
-- **标题**：毛主席语录 | Mao Zedong Quotations
-- **作者**：毛泽东 | Mao Zedong
-- **语言**：中文 | Chinese
-- **UUID**：`urn:uuid:273fd756-62f2-4858-8d67-99e08f24bba9`
-
-## 🎛️ 配置与定制 | Configuration
-
-### 样式定制
-所有样式使用CSS自定义属性，可通过修改 `:root` 中的变量调整：
-
-```css
-:root {
-    --primary: #4F46E5;    /* 主色 */
-    --secondary: #818CF8;  /* 辅色 */
-    --cta: #F97316;        /* 强调色 */
-    --bg: #EEF2FF;         /* 背景色 */
-    --text: #1E1B4B;       /* 文字色 */
-}
+```bash
+node --check src/app.mjs
+node --check src/corpus.mjs
+node --check src/card.mjs
+node --test tests/*.test.mjs
 ```
 
-### 部署配置
-项目使用 GitHub Actions 自动部署到 GitHub Pages：
-- **触发条件**：推送到 `main` 分支
-- **部署分支**：`gh-pages`
-- **访问地址**：`https://1998x-stack.github.io/maoZeDongYuLu/`
+`CI` 在提交 PR 时检查 JavaScript 语法、全部章节数据的一致性、段落拆分、检索与 Canvas 排版。部署工作流在校验通过后只打包网页所需的 `index.html`、`styles.css`、`src/` 和 `jsons/` 到 GitHub Pages。
 
-## 🤝 贡献 | Contributing
+## 项目结构
 
-欢迎提交 Issue 和 Pull Request！
+```text
+index.html               # 阅读页和图片工作台语义结构
+styles.css               # 阅读、响应式、交互焦点样式
+src/app.mjs              # 加载、章节导航、检索及卡片交互
+src/corpus.mjs           # 文件清单、结构校验、引文拆分、全文筛选
+src/card.mjs             # 主题、文本布局、Canvas 预览与 PNG 下载
+jsons/                   # 现有 35 份原始整理资料，内容未改写
+tests/                   # 索引和卡片布局的纯 Node 回归测试
+.github/workflows/       # PR 检查及 Pages 部署
+```
 
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
+更多设计原则、风险和后续迭代路径见 [技术设计与优化计划](docs/ARCHITECTURE.md)。
 
-## 📄 许可证 | License
+## 资料及权利提示
 
-本项目仅用于学习和研究目的。内容版权归原作者所有。
-
-## 🔄 更新日志 | Changelog
-
-### 📅 2026-04-07：v1.1.0 重大改进版本
-
-#### ✨ 新增功能
-- **搜索高亮**：搜索结果中的匹配关键词高亮显示
-- **清除搜索**：搜索框添加清除按钮，支持Escape快捷键
-- **加载动画**：章节加载时显示脉冲动画和状态提示
-- **错误处理**：增强错误检测和友好的错误消息显示
-- **ARIA实时区域**：动态内容更新时屏幕阅读器自动播报
-
-#### ♿ 无障碍改进
-- **键盘导航**：所有交互元素支持Tab键导航和Enter/Space激活
-- **焦点指示**：键盘操作时显示清晰的焦点轮廓
-- **ARIA属性**：完善aria-current、aria-busy、aria-live等属性
-- **语义化HTML**：使用正确的HTML5语义标签
-
-#### 📖 阅读体验优化
-- **字体升级**：改用Noto Serif SC，专为中文优化的衬线字体
-- **行高调整**：增加行高至1.7，提升长文本可读性
-- **字体大小**：正文调整为17px，更适合屏幕阅读
-- **字间距**：标题添加负字间距，提升视觉层次
-
-#### 🔧 技术改进
-- **防抖搜索**：300ms防抖避免频繁搜索
-- **加载状态**：aria-busy属性准确反映加载状态
-- **性能优化**：更高效的DOM操作和事件处理
-- **代码质量**：更好的错误处理和模块化
-
-#### 🐛 问题修复
-- 修复了直接打开文件无法加载数据的问题
-- 改进了移动端触摸体验
-- 修复了搜索时可能出现的性能问题
-
-### 📅 2026-04-07：v1.0.0 初始版本
-- 完成基本功能和设计
-- 实现章节导航和搜索功能
-- 添加Claymorphism设计风格
-
-## ⚠️ 注意事项 | Important Notes
-
-由于浏览器安全限制（CORS），直接打开 `index.html` 文件（`file://` 协议）无法加载JSON数据。必须通过HTTP服务器访问。
-
-**解决方案**：
-- 使用 `python3 -m http.server 8000` 启动本地服务器
-- 或使用 VS Code 的 Live Server 插件
-- 或部署到任何静态网站托管服务
-
-## 📞 联系方式 | Contact
-
-- **项目地址**：https://github.com/1998x-stack/maoZeDongYuLu
-- **问题反馈**：https://github.com/1998x-stack/maoZeDongYuLu/issues
-
----
-
-<div align="center">
-
-**⭐ 如果这个项目对你有帮助，请给个 Star！**<br>
-*If this project is helpful, please give it a Star!*
-
-</div>
+本项目沿用原仓库中的整理文本。源码与历史文献内容的使用权利可能不同；在转载、发行或商业使用前，应自行确认对应版本、文字、图片等材料的权利状态。README 中的技术说明不构成对正文著作权或来源真实性的保证。
