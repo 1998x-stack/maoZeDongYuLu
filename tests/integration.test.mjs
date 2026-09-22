@@ -2,9 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { CHAPTER_FILES, buildCorpus, selectEntries } from '../src/corpus.mjs';
 
-const root = resolve(import.meta.dirname || new URL('..', import.meta.url).pathname, '..');
+const root = fileURLToPath(new URL('..', import.meta.url));
 
 test('manifest matches exactly all shipped JSON chapters and builds complete corpus', () => {
   const dir = resolve(root, 'jsons');
