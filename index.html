@@ -4,28 +4,33 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#f6f3ec">
-  <meta name="description" content="《毛主席语录》整理资料的章节阅读、原文检索与文献卡片导出。">
-  <title>语录文献阅读器 · 章节与出处</title>
+  <meta name="description" content="《毛主席语录》仓库整理资料的章节阅读、逐条检索、出处状态核查与原文图片导出。">
+  <title>语录文献阅读器 · 逐条阅读与出处核对</title>
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./content.css">
   <script type="module" src="./src/app.mjs"></script>
 </head>
 <body>
   <a class="skip" href="#main">跳转到正文</a>
   <div class="workspace">
     <aside class="sidebar" aria-label="章节目录">
-      <div class="brand"><span class="eyebrow">DIGITAL TEXT ARCHIVE</span><h1>语录文献阅读器</h1><p>章节 · 全文检索 · 整理出处</p></div>
-      <label class="field-label" for="search">检索正文与出处</label>
+      <div class="brand"><span class="eyebrow">DIGITAL TEXT ARCHIVE</span><h1>语录文献阅读器</h1><p>逐条阅读 · 全文检索 · 出处核对</p></div>
+      <label class="field-label" for="search">检索正文、章节与出处</label>
       <div class="search-field"><input id="search" type="search" autocomplete="off" placeholder="输入关键词…"><kbd>/</kbd></div>
+      <label class="field-label" for="sourceFilter">资料所附出处</label>
+      <select id="sourceFilter" class="source-filter"><option value="all">全部记录</option><option value="supplied">有出处文字</option><option value="missing">未单独标注出处</option></select>
       <div class="sidebar-caption" id="corpusCount">正在加载资料…</div>
       <nav id="chapterNav" aria-label="按章节浏览"></nav>
-      <div class="sidebar-note">本页面依据仓库内的整理资料展示，不代表经校勘的完整版本。引文及其出处请结合原始资料核对。</div>
+      <div class="sidebar-note">本页面展示仓库整理资料；“有出处”仅表示资料中附有出处文字，并不代表已经外部核验。<a href="#aboutCorpus">了解数据与校勘边界</a></div>
     </aside>
     <main class="main" id="main">
-      <header class="hero"><span class="eyebrow">READ · RESEARCH · REFERENCE</span><h2>阅读原文，查阅出处</h2><p>按章节定位文本，或在整理语料中搜索；逐条查看引文及原资料附带的出处。</p><div class="hero-actions"><a href="#results" class="primary-link">开始阅读 ↓</a><span id="scope" class="scope" aria-live="polite">载入中…</span></div></header>
-      <section class="reader" id="results" aria-labelledby="resultTitle"><div class="reader-heading"><div><span class="eyebrow">TEXT COLLECTION</span><h2 id="resultTitle">正在加载</h2><p id="resultSub">读取章节和引用记录…</p></div><button id="reset" class="secondary-button" type="button">查看全部</button></div><div id="entries" class="entries" aria-live="polite" aria-busy="true"><p class="notice">正在加载资料…</p></div><button id="more" class="secondary-button more" type="button" hidden>显示更多记录</button></section>
-      <footer class="page-footer">静态文献浏览工具 · 不自动推断年代、作者或原始出处 · <a href="https://github.com/1998x-stack/maoZeDongYuLu">查看整理资料</a></footer>
+      <header class="hero"><span class="eyebrow">READ · LOCATE · VERIFY</span><h2>逐条阅读，回到资料原文</h2><p>按章节阅读、按正文及出处检索；每条记录保留所在篇章、资料位置与原整理出处。</p><div class="hero-actions"><a href="#results" class="primary-link">开始阅读 ↓</a><span id="scope" class="scope" aria-live="polite">载入中…</span></div></header>
+      <section id="overview" class="overview" aria-label="本仓库资料概况" aria-live="polite"><p class="notice">正在计算整理资料概况…</p></section>
+      <section id="aboutCorpus" class="editorial-note" aria-labelledby="aboutTitle"><div><span class="eyebrow">ABOUT THIS COLLECTION</span><h2 id="aboutTitle">怎样理解这些记录</h2><p>本页是对仓库内 JSON 整理文本的浏览，不是经过逐字校勘的权威版本，也不是对全部历史文献的抽样统计。内容保留原整理文本的措辞和标点；自动拆分只帮助定位，不补写缺失出处。</p></div><div class="note-grid"><div><h3>原资料与整理记录</h3><p>“整理记录”是按仓库中正文及相邻出处行拆分的阅读单位。一个原始 JSON 字符串可能含多条记录；目录与另有署名的再版前言单列为附属资料。</p></div><div><h3>“有出处”不等于“已核实”</h3><p>出处文字来自当前整理文件，尚未逐项与指定版次或原始出版物比对。缺少独立出处时会明确标记，不从章节名推断发表时间、作者或页码。</p></div><div><h3>怎样复核引用</h3><p>每条记录标出篇章序号、JSON 文件名及 contentList 位置，并提供原始数据入口。正式引用前，应再核对对应出版物和上下文；图片卡片也不代替完整来源。</p></div></div></section>
+      <section class="reader" id="results" aria-labelledby="resultTitle"><div class="reader-heading"><div><span class="eyebrow">TEXT COLLECTION</span><h2 id="resultTitle">正在加载</h2><p id="resultSub">读取章节与引文记录…</p></div><button id="reset" class="secondary-button" type="button">清除筛选</button></div><div id="entries" class="entries" aria-live="polite" aria-busy="true"><p class="notice">正在加载资料…</p></div><button id="more" class="secondary-button more" type="button" hidden>显示更多记录</button></section>
+      <footer class="page-footer">静态文献浏览工具 · 不自动推断年代、作者或原始出处 · <a href="https://github.com/1998x-stack/maoZeDongYuLu">查看仓库整理资料</a></footer>
     </main>
   </div>
-  <dialog id="studio" class="studio" aria-labelledby="studioTitle"><div class="studio-shell"><header class="studio-header"><div><span class="eyebrow">IMAGE CARD STUDIO</span><h2 id="studioTitle">文献卡片</h2><p>保留原文，逐页导出 PNG；完整来源以阅读页为准。</p></div><button id="closeStudio" type="button" class="secondary-button" aria-label="关闭图片编辑器">关闭</button></header><div class="studio-grid"><div class="controls"><fieldset><legend>版式主题</legend><label><input type="radio" name="cardTheme" value="paper" checked> 纸本文献</label><label><input type="radio" name="cardTheme" value="peach"> 柔和笔记</label><label><input type="radio" name="cardTheme" value="night"> 深色阅读</label></fieldset><label for="cardRatio">画幅比例</label><select id="cardRatio"><option value="3:4">3:4 · 1080 × 1440</option><option value="4:5">4:5 · 1080 × 1350</option><option value="1:1">1:1 · 1080 × 1080</option></select><label for="cardSize">正文字号 <output id="sizeValue">48</output> px</label><input id="cardSize" type="range" min="32" max="68" step="2" value="48"><p class="small-note">纯本地生成，不上传正文。卡片上的出处如过长会提示到阅读页查阅完整文本。</p><details><summary>完整出处</summary><p id="studioSource"></p></details></div><div class="preview"><canvas id="cardCanvas" width="1080" height="1440" role="img" aria-label="当前文献卡片图片预览"></canvas><div class="pager"><button id="prev" class="secondary-button" type="button">上一页</button><output id="pageLabel" aria-live="polite">1 / 1</output><button id="next" class="secondary-button" type="button">下一页</button></div><button id="download" class="download-button" type="button">下载本页 PNG</button><p id="studioStatus" class="small-note" role="status"></p></div></div></div></dialog>
+  <dialog id="studio" class="studio" aria-labelledby="studioTitle"><div class="studio-shell"><header class="studio-header"><div><span class="eyebrow">IMAGE CARD STUDIO</span><h2 id="studioTitle">文献卡片</h2><p>原文与资料出处分开排版；图片不是经核验的原始文献复制品。</p></div><button id="closeStudio" type="button" class="secondary-button" aria-label="关闭图片编辑器">关闭</button></header><div class="studio-grid"><div class="controls"><fieldset><legend>版式主题</legend><label><input type="radio" name="cardTheme" value="paper" checked> 纸本文献</label><label><input type="radio" name="cardTheme" value="peach"> 柔和笔记</label><label><input type="radio" name="cardTheme" value="night"> 深色阅读</label></fieldset><label for="cardRatio">画幅比例</label><select id="cardRatio"><option value="3:4">3:4 · 1080 × 1440</option><option value="4:5">4:5 · 1080 × 1350</option><option value="1:1">1:1 · 1080 × 1080</option></select><label for="cardSize">正文字号 <output id="sizeValue">48</output> px</label><input id="cardSize" type="range" min="32" max="68" step="2" value="48"><p class="small-note">图片在本地生成；长文分成多页。图片中的出处文字来自整理资料，尚未外部核对。</p><details><summary>资料原有的完整出处</summary><p id="studioSource"></p></details></div><div class="preview"><canvas id="cardCanvas" width="1080" height="1440" role="img" aria-label="当前文献卡片图片预览"></canvas><div class="pager"><button id="prev" class="secondary-button" type="button">上一页</button><output id="pageLabel" aria-live="polite">1 / 1</output><button id="next" class="secondary-button" type="button">下一页</button></div><button id="download" class="download-button" type="button">下载本页 PNG</button><p id="studioStatus" class="small-note" role="status"></p></div></div></div></dialog>
 </body>
 </html>
