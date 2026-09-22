@@ -32,18 +32,36 @@ export function validateChapter(chapter, file = 'unknown') {
 }
 
 /**
- * This is a conservative *format recognizer*, not a bibliography verifier.
- * The collected JSON contains both "——《作品》…" and "《作品》（日期）…".
- * A bare book title alone is NOT enough to classify a line as a citation.
- * Ambiguous lines remain in the body for manual editorial review.
+ * This is a source-LINE format recognizer, not a verification of the stated source.
+ * The corpus mixes —— sources, 《work》（date） bibliographies, and unprefixed
+ * occasion/date/publication citations. Ambiguous lines remain unchanged for review.
  */
 export function isBibliographicSourceLine(line) {
   const value = line.trim();
   const title = /^《[^》\n]{1,140}》/u.exec(value);
-  if (!title) return false;
-  const rest = value.slice(title[0].length);
-  return /[（(][^）)]{0,40}(?:年|月|日)/u.test(rest) ||
-    /(?:出版社|出版|第[一二三四五六七八九十百千万〇零\d—－-]+(?:卷|页))/u.test(rest);
+  if (title) {
+    const rest = value.slice(title[0].length);
+    return /[（(][^）)]{0,40}(?:年|月|日)/u.test(rest) ||
+      /(?:出版社|出版|第[一二三四五六七八九十百千万〇零\d—－-]+(?:卷|页))/u.test(rest);
+  }
+  // At least one collected line has a visibly unmatched book-title bracket.
+  // Preserve the imperfect original, but recognize its date + bibliographic tail.
+  return /^《[^》\n]{1,140}[（(][^）)]{0,40}年[^）)]*[）)].*(?:出版社|出版|版|第[^\n]{1,20}页)/u.test(value);
+}
+
+export function isUnprefixedSourceLine(line) {
+  const value = line.trim();
+  // A literal editorial note present in the collection. It is not a verified
+  // bibliographic citation and must be labelled separately in the reader.
+  if (/^为[“「『"][^”」』"]+[”」』"]制定的校训$/u.test(value)) return true;
+  const occasion = /^(?:在[^。！？\n]{1,90}(?:讲话|谈话|开幕词|闭幕词|报告|指示)|对[^。！？\n]{1,90}的谈话)[（(][^）)]{0,45}年[^）)]*[）)]/u.exec(value);
+  if (!occasion) return false;
+  const remainder = value.slice(occasion[0].length);
+  return /(?:《[^》]{1,140}》|〈[^〉]{1,140}〉|出版社|人民日报|第[^\n]{1,20}页)/u.test(remainder);
+}
+
+export function isEditorialSourceNote(line) {
+  return /^为[“「『"][^”」』"]+[”」』"]制定的校训$/u.test(line.trim());
 }
 
 export function splitBlock(block) {
@@ -51,7 +69,8 @@ export function splitBlock(block) {
   const records = [];
   let body = [];
   for (const line of lines) {
-    const sourceLine = line.trimStart().startsWith('——') || isBibliographicSourceLine(line);
+    const sourceLine = line.trimStart().startsWith('——') ||
+      isBibliographicSourceLine(line) || isUnprefixedSourceLine(line);
     if (sourceLine && body.some(value => value.trim())) {
       records.push({ text: body.join('\n').trim(), source: line.trim() });
       body = [];
@@ -92,6 +111,8 @@ export function buildCorpus(rawChapters) {
           blockIndex: blockIndex + 1,
           recordIndex: recordIndex + 1,
           sourceFile,
+          sourceIsNote: isEditorialSourceNote(record.source),
+          sourceNeedsReview: Boolean(record.source && record.source.startsWith('《') && !record.source.includes('》')),
         };
         entries.push(entry);
         group.push(entry);
@@ -118,7 +139,7 @@ export function chapterCounts(entries) {
   return counts;
 }
 
-/** Values describe this *repository extract*, not all texts or verified publication dates. */
+/** Values describe the repository extract, not historical totals or verified dates. */
 export function corpusSummary(entries) {
   const sourceSupplied = entries.filter(entry => Boolean(entry.source)).length;
   return { records: entries.length, sourceSupplied, sourceMissing: entries.length - sourceSupplied,
