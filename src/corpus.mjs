@@ -1,4 +1,4 @@
-// Keep the reading order explicit: static hosting does not expose directory listings.
+// Static Pages hosting cannot list directories. Keep source order explicit and auditable.
 export const CHAPTER_FILES = [
   '01_目录.json', '02_《毛主席语录》再版前言.json',
   '03_一、共产党.json', '04_二、阶级和阶级斗争.json',
@@ -31,24 +31,36 @@ export function validateChapter(chapter, file = 'unknown') {
   return chapter;
 }
 
-// A contentList element may contain MANY quotations. An attribution line begins
-// with an em dash at the beginning of a line. Never infer a date or a source.
-// Preserve the exact words, and retain unattributed text instead of dropping it.
+/**
+ * This is a conservative *format recognizer*, not a bibliography verifier.
+ * The collected JSON contains both "——《作品》…" and "《作品》（日期）…".
+ * A bare book title alone is NOT enough to classify a line as a citation.
+ * Ambiguous lines remain in the body for manual editorial review.
+ */
+export function isBibliographicSourceLine(line) {
+  const value = line.trim();
+  const title = /^《[^》\n]{1,140}》/u.exec(value);
+  if (!title) return false;
+  const rest = value.slice(title[0].length);
+  return /[（(][^）)]{0,40}(?:年|月|日)/u.test(rest) ||
+    /(?:出版社|出版|第[一二三四五六七八九十百千万〇零\d—－-]+(?:卷|页))/u.test(rest);
+}
+
 export function splitBlock(block) {
   const lines = block.replace(/\r\n?/g, '\n').split('\n');
   const records = [];
   let body = [];
   for (const line of lines) {
-    if (line.startsWith('——') && body.some(value => value.trim())) {
-      const text = body.join('\n').trim();
-      records.push({ text, source: line });
+    const sourceLine = line.trimStart().startsWith('——') || isBibliographicSourceLine(line);
+    if (sourceLine && body.some(value => value.trim())) {
+      records.push({ text: body.join('\n').trim(), source: line.trim() });
       body = [];
     } else {
       body.push(line);
     }
   }
-  const tail = body.join('\n').trim();
-  if (tail) records.push({ text: tail, source: '' });
+  const remaining = body.join('\n').trim();
+  if (remaining) records.push({ text: remaining, source: '' });
   return records;
 }
 
@@ -63,10 +75,11 @@ export function buildCorpus(rawChapters) {
   const entries = [];
   const chapterEntries = new Map();
   for (const chapter of chapters) {
-    // The table of contents and separately authored preface are documents,
-    // not quotations. Do not attribute the preface to the quotation author.
+    // The table of contents and separately authored preface are documents.
     if (chapter.id === 'chapter_01' || chapter.id === 'chapter_02') continue;
     const group = [];
+    const chapterNumber = Number(chapter.id.slice('chapter_'.length));
+    const sourceFile = CHAPTER_FILES.find(file => file.startsWith(`${String(chapterNumber).padStart(2, '0')}_`)) || '';
     chapter.contentList.forEach((block, blockIndex) => {
       splitBlock(block).forEach((record, recordIndex) => {
         const entry = {
@@ -75,6 +88,10 @@ export function buildCorpus(rawChapters) {
           chapterId: chapter.id,
           chapter: chapter.chapter,
           classify: chapter.classify,
+          ordinal: group.length + 1,
+          blockIndex: blockIndex + 1,
+          recordIndex: recordIndex + 1,
+          sourceFile,
         };
         entries.push(entry);
         group.push(entry);
@@ -85,10 +102,11 @@ export function buildCorpus(rawChapters) {
   return { chapters, entries, chapterEntries };
 }
 
-export function selectEntries(entries, { query = '', chapterId = 'all' } = {}) {
+export function selectEntries(entries, { query = '', chapterId = 'all', sourceFilter = 'all' } = {}) {
   const term = query.trim().toLocaleLowerCase();
   return entries.filter(entry =>
     (chapterId === 'all' || entry.chapterId === chapterId) &&
+    (sourceFilter === 'all' || (sourceFilter === 'supplied' ? Boolean(entry.source) : !entry.source)) &&
     (!term || [entry.text, entry.source, entry.chapter, entry.classify]
       .some(value => value.toLocaleLowerCase().includes(term)))
   );
@@ -98,4 +116,11 @@ export function chapterCounts(entries) {
   const counts = new Map();
   for (const entry of entries) counts.set(entry.chapterId, (counts.get(entry.chapterId) || 0) + 1);
   return counts;
+}
+
+/** Values describe this *repository extract*, not all texts or verified publication dates. */
+export function corpusSummary(entries) {
+  const sourceSupplied = entries.filter(entry => Boolean(entry.source)).length;
+  return { records: entries.length, sourceSupplied, sourceMissing: entries.length - sourceSupplied,
+    chapters: new Set(entries.map(entry => entry.chapterId)).size };
 }
