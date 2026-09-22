@@ -19,5 +19,8 @@ jobs:
           node --check src/app.mjs
           node --check src/corpus.mjs
           node --check src/card.mjs
+          node --check scripts/audit-content.mjs
       - name: Test data integrity, parsing, search and image layout
         run: node --test tests/*.test.mjs
+      - name: Audit content and attached source coverage
+        run: node scripts/audit-content.mjs
